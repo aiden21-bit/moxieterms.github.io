@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moxie Karaoke Booking</title>
+  <style>
+    :root {
+      --bg: #090814;
+      --surface: rgba(18, 20, 38, 0.88);
+      --surface-strong: #151934;
+      --ink: #f4f0ff;
+      --muted: #b4afd2;
+      --accent: #8c5bff;
+      --accent-dark: #5b8cff;
+      --line: rgba(180, 175, 210, 0.18);
+      --success: #76d7b2;
+      --shadow: 0 24px 60px rgba(2, 3, 10, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(140, 91, 255, 0.28), transparent 26%),
+        radial-gradient(circle at top right, rgba(91, 140, 255, 0.2), transparent 24%),
+        radial-gradient(circle at bottom, rgba(255, 72, 176, 0.1), transparent 24%),
+        linear-gradient(180deg, #05060d 0%, var(--bg) 100%);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 32px auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero,
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      padding: 32px;
+      display: grid;
+      gap: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .account-button {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(140, 91, 255, 0.28);
+      background: rgba(17, 20, 40, 0.92);
+      color: #f4f0ff;
+      box-shadow: 0 12px 24px rgba(3, 4, 10, 0.35);
+    }
+
+    .account-button:hover {
+      background: rgba(29, 33, 62, 0.96);
+    }
+
+    .account-button svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .hero-top {
+      display: grid;
+      gap: 24px;
+      justify-items: center;
+    }
+
+    .hero-logo {
+      width: min(100%, 620px);
+      padding: 26px 28px 18px;
+      border-radius: 30px;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      background:
+        radial-gradient(circle at top, rgba(140, 91, 255, 0.18), transparent 50%),
+        linear-gradient(180deg, rgba(25, 29, 59, 0.92), rgba(12, 14, 28, 0.9));
+      box-shadow:
+        0 18px 34px rgba(5, 6, 13, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(140, 91, 255, 0.18);
+    }
+
+    .hero-logo svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hero-logo-subtitle {
+      font-size: clamp(0.75rem, 1.4vw, 1rem);
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: #e9e3ff;
+      padding-left: 0.42em;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(140, 91, 255, 0.14);
+      color: #c5b8ff;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 4.4rem);
+      line-height: 0.95;
+      max-width: 13ch;
+      text-align: center;
+    }
+
+    .hero p {
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+
+    .card {
+      padding: 28px;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .toggle-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .toggle {
+      position: relative;
+    }
+
+    .toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toggle span {
+      display: block;
+      padding: 16px 18px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      cursor: pointer;
+      transition: 180ms ease;
+      min-height: 100%;
+    }
+
+    .toggle strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    .toggle small {
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .toggle input:checked + span {
+      border-color: rgba(140, 91, 255, 0.55);
+      background: linear-gradient(180deg, rgba(140, 91, 255, 0.24), rgba(91, 140, 255, 0.12));
+      transform: translateY(-1px);
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .wide-field {
+      grid-column: span 2;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px 15px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(10, 12, 24, 0.9);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #8e88b2;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .hint {
+      margin-top: -2px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 400;
+      line-height: 1.45;
+    }
+
+    .agreement {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(140, 91, 255, 0.12), rgba(91, 140, 255, 0.08));
+      border: 1px solid rgba(140, 91, 255, 0.2);
+    }
+
+    .agreement input {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+    }
+
+    .agreement label {
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .fine-print {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 180ms ease;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #fdfbff;
+    }
+
+    .primary:hover {
+      background: linear-gradient(135deg, #7546e8 0%, #4777e8 100%);
+      transform: translateY(-1px);
+    }
+
+    .secondary {
+      background: transparent;
+      color: #cbc2ff;
+      border: 1px solid rgba(140, 91, 255, 0.3);
+    }
+
+    .secondary:hover {
+      background: rgba(140, 91, 255, 0.08);
+    }
+
+    .status {
+      min-height: 1.5rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .action-note {
+      min-height: 1.2rem;
+      margin-top: -6px;
+      color: #ffb6c9;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .summary {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .summary-box {
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(91, 140, 255, 0.22), transparent 30%),
+        linear-gradient(180deg, #1a1030 0%, #0d1124 100%);
+      color: #fff8ff;
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-box p {
+      color: rgba(244, 240, 255, 0.78);
+      line-height: 1.5;
+    }
+
+    .estimate {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 16px 0;
+      border-top: 1px solid rgba(255, 248, 240, 0.12);
+      border-bottom: 1px solid rgba(244, 240, 255, 0.12);
+    }
+
+    .estimate strong {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-item {
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(20, 25, 52, 0.95), rgba(16, 19, 38, 0.95));
+      border: 1px solid var(--line);
+    }
+
+    .summary-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .summary-item p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .saved-output {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(9, 11, 24, 0.92);
+      border: 1px dashed rgba(180, 175, 210, 0.24);
+      white-space: pre-wrap;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 6, 14, 0.74);
+      display: none;
+      place-items: center;
+      padding: 20px;
+      z-index: 20;
+    }
+
+    .modal-backdrop.open {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(100%, 420px);
+      padding: 24px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(21, 25, 52, 0.98), rgba(11, 13, 27, 0.98));
+      border: 1px solid rgba(140, 91, 255, 0.18);
+      box-shadow: 0 24px 60px rgba(2, 3, 10, 0.42);
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-status {
+      min-height: 1.2rem;
+      color: #ffb6c9;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        margin: 16px auto 28px;
+      }
+
+      .hero,
+      .card {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .grid,
+      .toggle-group {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-top {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-logo {
+        padding: 20px 18px 16px;
+        border-radius: 24px;
+      }
+
+      h1 {
+        max-width: 12ch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <button class="account-button" id="accountButton" type="button" aria-label="Open saved bookings">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M4 21C4.9 17.9 7.9 16 12 16C16.1 16 19.1 17.9 20 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <span class="eyebrow">Moxie Karaoke Booking Tracker</span>
+      <div class="hero-top">
+        <div class="hero-logo" aria-hidden="true">
+          <svg viewBox="0 0 760 170" xmlns="http://www.w3.org/2000/svg">
+            <rect x="26" y="18" width="16" height="112" rx="8" fill="#0b0d18"/>
+            <rect x="64" y="4" width="18" height="144" rx="9" fill="#527cff"/>
+            <rect x="100" y="42" width="14" height="70" rx="7" fill="#0b0d18"/>
+            <circle cx="22" cy="25" r="10" fill="#0b0d18"/>
+            <circle cx="108" cy="138" r="10" fill="#0b0d18"/>
+
+            <path d="M165 110V42h20l50 52 50-52h20v68h-20V70l-49 50h-2l-49-50v40h-20Z" fill="#f7f4ff"/>
+            <path d="M368 46c17 0 32 7 43 18 11 12 18 27 18 44s-7 32-18 44c-11 11-26 18-43 18-18 0-33-7-44-18-11-12-18-27-18-44h22c0 12 4 22 12 30 7 8 17 12 28 12s20-4 28-12c7-8 11-18 11-30s-4-22-11-30c-8-8-17-12-28-12V46Z" fill="#f7f4ff"/>
+            <path d="M460 42h24l37 47 37-47h24l-49 61 54 67h-24l-42-53-42 53h-24l54-67-49-61Z" fill="#f7f4ff"/>
+            <rect x="621" y="42" width="20" height="70" rx="10" fill="#f7f4ff"/>
+            <circle cx="631" cy="22" r="10" fill="#527cff"/>
+            <rect x="676" y="42" width="66" height="12" rx="6" fill="#f7f4ff"/>
+            <rect x="676" y="72" width="52" height="12" rx="6" fill="#f7f4ff"/>
+            <rect x="676" y="102" width="66" height="12" rx="6" fill="#f7f4ff"/>
+            <rect x="676" y="132" width="52" height="12" rx="6" fill="#f7f4ff"/>
+          </svg>
+        </div>
+        <div class="hero-logo-subtitle">Lounge &amp; Karaoke</div>
+        <h1>Keep every karaoke booking clear before the mic turns on.</h1>
+      </div>
+      <p>
+        Use this page to track room selections, guest count, estimated pricing, and customer agreement details for Happy Hour or Regular Hour bookings.
+      </p>
+    </section>
+
+    <section class="layout">
+      <div class="card">
+        <div class="section-head">
+          <h2>Booking Form</h2>
+          <p>Choose the booking type and save a clear record of the guest's agreement.</p>
+        </div>
+
+        <form id="booking-form">
+          <div class="toggle-group">
+            <label class="toggle">
+              <input type="radio" name="bookingType" value="happy" checked>
+              <span>
+                <strong>Happy Hour</strong>
+                <small>$30 per person. Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM.</small>
+              </span>
+            </label>
+            <label class="toggle">
+              <input type="radio" name="bookingType" value="regular">
+              <span>
+                <strong>Regular Hour</strong>
+                <small>Room-based hourly pricing. Food and drinks separate.</small>
+              </span>
+            </label>
+          </div>
+
+          <div class="grid">
+            <label>
+              Name
+              <input id="guestName" name="guestName" type="text" placeholder="Guest or party name" required>
+            </label>
+          </div>
+
+          <div class="grid" id="regularRoomFields" hidden>
+            <label>
+              Karaoke Room
+              <select id="roomType" name="roomType">
+                <option value="" data-rate="0" data-max="0" selected>Select a room</option>
+                <option value="Small Room" data-rate="48" data-max="5">Small Room (5 max) - $48/hr</option>
+                <option value="Medium Room" data-rate="68" data-max="7">Medium Room (7 max) - $68/hr</option>
+                <option value="Large Room" data-rate="88" data-max="13">Large Room (13 max) - $88/hr</option>
+                <option value="X Large Room" data-rate="108" data-max="18">X Large Room (18 max) - $108/hr</option>
+                <option value="VIP Room" data-rate="108" data-max="50">VIP Room (50 max) - $108/hr</option>
+              </select>
+              <span class="hint" id="roomCapacityHint">Choose a room to set the guest limit.</span>
+            </label>
+          </div>
+
+          <div class="grid">
+            <label>
+              Number of People
+              <select id="people" name="people" required></select>
+              <span class="hint" id="peopleHint">Choose a room first for Regular Hour bookings.</span>
+            </label>
+
+            <label id="durationLabel">
+              Karaoke Room Hours
+              <input id="hours" name="hours" type="number" min="1" step="1" value="2" required>
+              <span class="hint">Regular Hour estimate uses the selected room's hourly rate.</span>
+            </label>
+          </div>
+
+          <div class="grid" id="timeFields">
+            <label>
+              <span id="dateLabelText">Booking Date</span>
+              <input id="bookingDate" name="bookingDate" type="date" required>
+            </label>
+
+            <label id="happyTimesField" class="wide-field">
+              <span id="happyTimesLabelText">Happy Hour Times</span>
+              <input id="happyTimes" name="happyTimes" type="text" value="Mon-Fri 6:00 PM to 8:00 PM | Sat-Sun 3:00 PM to 9:00 PM" readonly>
+            </label>
+
+            <label id="regularStartField" hidden>
+              <span id="startLabelText">Reservation Start Time</span>
+              <input id="startTime" name="startTime" type="time">
+            </label>
+
+            <label id="regularEndField" hidden>
+              <span id="endLabelText">Reservation End Time</span>
+              <input id="endTime" name="endTime" type="time">
+            </label>
+          </div>
+
+          <label>
+            Notes
+            <textarea id="notes" name="notes" placeholder="Special requests or booking notes"></textarea>
+          </label>
+
+          <div class="agreement">
+            <input id="agreement" name="agreement" type="checkbox" required>
+            <label for="agreement">
+              I agree to be responsible for all karaoke room charges, food, and beverage charges for this booking.
+              <span class="fine-print" id="agreementCopy">
+                (Happy Hour) $30 per person covers food and drinks up to that value. Guest pays the difference if they go over. No refunds or credit if under. No to-go orders. Happy Hour is available Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM. An 18 percent service charge will be added.
+              </span>
+            </label>
+          </div>
+
+          <p class="fine-print" id="finePrintText">
+            Happy Hour terms: $30 per person. Available Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM. This covers food and drinks up to that value. If the total goes over, the guest pays the difference. No refunds or credit if under the included amount. No to-go orders. An 18 percent service charge will be added.
+          </p>
+
+          <div class="button-row">
+            <button class="primary" type="submit" id="saveButton">Save Booking</button>
+            <button class="secondary" type="button" id="resetButton">Reset</button>
+          </div>
+
+          <div class="status" id="statusMessage" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <aside class="summary">
+        <div class="summary-box">
+          <h2>Estimate</h2>
+          <p id="summaryIntro">Happy Hour estimate is based on $30 per person during the posted Happy Hour time windows.</p>
+          <div class="estimate">
+            <span id="estimateLabel">Estimated Charge</span>
+            <strong id="estimateValue">$120</strong>
+          </div>
+          <p id="estimateDetails">4 guests x $30 per person = $120 estimated Happy Hour total before service charge.</p>
+        </div>
+
+        <div class="summary-list">
+          <div class="summary-item">
+            <strong>Happy Hour Terms</strong>
+            <p>$30 per person. Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM. Covers food and drinks up to that value. Guest pays the difference if they go over. No refunds or credit if under. No to-go orders.</p>
+          </div>
+          <div class="summary-item">
+            <strong>Regular Hour Terms</strong>
+            <p>Room rates vary by room size. Food and drinks are separate. No outside food or drinks. An 18 percent service charge will be added.</p>
+          </div>
+          <div class="summary-item">
+            <strong>Saved Agreement</strong>
+            <p id="savedPrompt">When you save the form, the agreement details will appear below for quick record keeping.</p>
+            <div class="saved-output" id="savedOutput">No booking saved yet.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="accountModal" aria-hidden="true">
+    <div class="modal-card">
+      <h2>Saved Bookings Access</h2>
+      <p class="fine-print">Enter the access code to view previous saved bookings.</p>
+      <label>
+        Access Code
+        <input id="accessCode" type="password" inputmode="numeric" placeholder="Enter code">
+      </label>
+      <div class="button-row">
+        <button class="primary" type="button" id="unlockButton">Open Bookings</button>
+        <button class="secondary" type="button" id="closeModalButton">Close</button>
+      </div>
+      <div class="modal-status" id="modalStatus" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("booking-form");
+    const peopleInput = document.getElementById("people");
+    const hoursInput = document.getElementById("hours");
+    const timeFields = document.getElementById("timeFields");
+    const regularRoomFields = document.getElementById("regularRoomFields");
+    const finePrintText = document.getElementById("finePrintText");
+    const agreementCopy = document.getElementById("agreementCopy");
+    const summaryIntro = document.getElementById("summaryIntro");
+    const estimateValue = document.getElementById("estimateValue");
+    const estimateDetails = document.getElementById("estimateDetails");
+    const estimateLabel = document.getElementById("estimateLabel");
+    const savedOutput = document.getElementById("savedOutput");
+    const statusMessage = document.getElementById("statusMessage");
+    const resetButton = document.getElementById("resetButton");
+    const saveButton = document.getElementById("saveButton");
+    const roomTypeSelect = document.getElementById("roomType");
+    const roomCapacityHint = document.getElementById("roomCapacityHint");
+    const peopleHint = document.getElementById("peopleHint");
+    const bookingTypeInputs = Array.from(document.querySelectorAll('input[name="bookingType"]'));
+    const dateLabelText = document.getElementById("dateLabelText");
+    const happyTimesField = document.getElementById("happyTimesField");
+    const happyTimesInput = document.getElementById("happyTimes");
+    const regularStartField = document.getElementById("regularStartField");
+    const regularEndField = document.getElementById("regularEndField");
+    const startLabelText = document.getElementById("startLabelText");
+    const endLabelText = document.getElementById("endLabelText");
+    const bookingDateInput = document.getElementById("bookingDate");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+    const accountButton = document.getElementById("accountButton");
+    const accountModal = document.getElementById("accountModal");
+    const accessCodeInput = document.getElementById("accessCode");
+    const unlockButton = document.getElementById("unlockButton");
+    const closeModalButton = document.getElementById("closeModalButton");
+    const modalStatus = document.getElementById("modalStatus");
+
+    let lastSavedAgreement = "";
+    const bookingStorageKey = "moxie_saved_bookings";
+
+    function getSavedBookings() {
+      try {
+        return JSON.parse(localStorage.getItem(bookingStorageKey) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveBookingToHistory(text) {
+      const bookings = getSavedBookings();
+      bookings.unshift(text);
+      localStorage.setItem(bookingStorageKey, JSON.stringify(bookings.slice(0, 100)));
+    }
+
+    function buildHistoryPageHtml(bookings) {
+      const bookingCards = bookings.length === 0
+        ? '<div class="empty">No saved bookings yet.</div>'
+        : bookings.map((bookingText, index) => `<article class="item"><div class="item-head"><strong>Booking ${bookings.length - index}</strong><span>Saved record</span></div><div class="item-body">${escapeHtml(bookingText)}</div></article>`).join("");
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moxie Saved Bookings</title>
+  <style>
+    :root {
+      --bg: #090814;
+      --surface: rgba(18, 20, 38, 0.96);
+      --surface-strong: #151934;
+      --ink: #f4f0ff;
+      --muted: #b4afd2;
+      --accent: #8c5bff;
+      --accent-dark: #5b8cff;
+      --line: rgba(180, 175, 210, 0.18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(140, 91, 255, 0.24), transparent 26%),
+        radial-gradient(circle at top right, rgba(91, 140, 255, 0.18), transparent 24%),
+        linear-gradient(180deg, #05060d 0%, var(--bg) 100%);
+      padding: 28px;
+    }
+    .wrap {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(2, 3, 10, 0.42);
+    }
+    h1, h2, p { margin: 0; }
+    .hero {
+      background:
+        radial-gradient(circle at top right, rgba(91, 140, 255, 0.22), transparent 30%),
+        linear-gradient(180deg, #1a1030 0%, #0d1124 100%);
+    }
+    .badge {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(140, 91, 255, 0.14);
+      color: #c5b8ff;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sub { color: var(--muted); margin-top: 8px; line-height: 1.5; }
+    .list { display: grid; gap: 12px; }
+    .item {
+      padding: 16px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(20, 25, 52, 0.95), rgba(16, 19, 38, 0.95));
+      border: 1px solid rgba(140, 91, 255, 0.12);
+      display: grid;
+      gap: 12px;
+    }
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--ink);
+    }
+    .item-head span {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .item-body {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: var(--muted);
+      padding-top: 10px;
+      border-top: 1px solid rgba(180, 175, 210, 0.12);
+    }
+    .empty { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card hero">
+      <div class="badge">Private Access</div>
+      <h1>Previous Bookings</h1>
+      <p class="sub">Stored on this browser for private staff access. Every saved booking appears below with its full details.</p>
+    </section>
+    <section class="card list">${bookingCards}</section>
+  </main>
+</body>
+</html>`;
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function openBookingsTab() {
+      const bookings = getSavedBookings();
+      const historyHtml = buildHistoryPageHtml(bookings);
+      const historyBlob = new Blob([historyHtml], { type: "text/html" });
+      const historyUrl = URL.createObjectURL(historyBlob);
+      const bookingsTab = window.open(historyUrl, "_blank");
+      if (!bookingsTab) {
+        modalStatus.textContent = "Popup blocked. Allow popups for this page to open bookings.";
+        return;
+      }
+      setTimeout(() => URL.revokeObjectURL(historyUrl), 60000);
+    }
+
+    function openAccountModal() {
+      accountModal.classList.add("open");
+      accountModal.setAttribute("aria-hidden", "false");
+      accessCodeInput.value = "";
+      modalStatus.textContent = "";
+      accessCodeInput.focus();
+    }
+
+    function closeAccountModal() {
+      accountModal.classList.remove("open");
+      accountModal.setAttribute("aria-hidden", "true");
+      modalStatus.textContent = "";
+    }
+
+    function unlockSavedBookings() {
+      if (accessCodeInput.value !== "0222") {
+        modalStatus.textContent = "Incorrect code.";
+        return;
+      }
+
+      openBookingsTab();
+      closeAccountModal();
+    }
+
+    function getBookingType() {
+      return form.elements.bookingType.value;
+    }
+
+    function formatMoney(amount) {
+      return `$${amount.toFixed(2).replace(".00", "")}`;
+    }
+
+    function getSelectedRoomRate() {
+      const option = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+      return Number(option.dataset.rate || 0);
+    }
+
+    function getSelectedRoomMax() {
+      const option = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+      return Number(option.dataset.max || 1);
+    }
+
+    function populatePeopleOptions(maxGuests, preferredValue) {
+      if (maxGuests <= 0) {
+        peopleInput.innerHTML = '<option value="">Choose room first</option>';
+        peopleInput.value = "";
+        return;
+      }
+
+      const targetValue = Math.min(Math.max(Number(preferredValue) || 1, 1), maxGuests);
+      peopleInput.innerHTML = "";
+
+      for (let i = 1; i <= maxGuests; i += 1) {
+        const option = document.createElement("option");
+        option.value = String(i);
+        option.textContent = String(i);
+        if (i === targetValue) {
+          option.selected = true;
+        }
+        peopleInput.appendChild(option);
+      }
+    }
+
+    function syncPeopleLimit() {
+      const type = getBookingType();
+      const currentValue = peopleInput.value;
+
+      if (type === "regular") {
+        const roomMax = getSelectedRoomMax();
+        const roomName = roomTypeSelect.value;
+        peopleInput.disabled = !roomName;
+
+        if (!roomName || roomMax <= 0) {
+          populatePeopleOptions(0, "");
+          roomCapacityHint.textContent = "Choose a room to set the guest limit.";
+          peopleHint.textContent = "Choose a room first for Regular Hour bookings.";
+          return;
+        }
+
+        populatePeopleOptions(roomMax, currentValue);
+        roomCapacityHint.textContent = `This room allows up to ${roomMax} guest${roomMax === 1 ? "" : "s"}.`;
+        peopleHint.textContent = `Guest choices are limited to 1-${roomMax} for the selected room.`;
+      } else {
+        peopleInput.disabled = false;
+        populatePeopleOptions(50, currentValue || 4);
+        roomCapacityHint.textContent = "Select a room to see that room's guest limit.";
+        peopleHint.textContent = "Happy Hour allows general guest-count selection.";
+      }
+    }
+
+    function updateView() {
+      const type = getBookingType();
+      syncPeopleLimit();
+      const people = Math.max(Number(peopleInput.value) || 0, 0);
+      const hours = Math.max(Number(hoursInput.value) || 0, 0);
+
+      if (type === "happy") {
+        const total = people * 30;
+        timeFields.hidden = false;
+        regularRoomFields.hidden = true;
+        hoursInput.disabled = true;
+        dateLabelText.textContent = "Booking Date";
+        happyTimesField.hidden = false;
+        regularStartField.hidden = true;
+        regularEndField.hidden = true;
+        happyTimesInput.value = "Mon-Fri 6:00 PM to 8:00 PM | Sat-Sun 3:00 PM to 9:00 PM";
+        startTimeInput.value = "";
+        endTimeInput.value = "";
+        document.getElementById("durationLabel").style.opacity = "0.55";
+        summaryIntro.textContent = "Happy Hour estimate is based on $30 per person during the posted Happy Hour time windows.";
+        estimateLabel.textContent = "Estimated Charge";
+        estimateValue.textContent = formatMoney(total);
+        estimateDetails.textContent = `${people} guest${people === 1 ? "" : "s"} x $30 per person = ${formatMoney(total)} estimated Happy Hour total before service charge.`;
+        finePrintText.textContent = "Happy Hour terms: $30 per person. Available Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM. This covers food and drinks up to that value. If the total goes over, the guest pays the difference. No refunds or credit if under the included amount. No to-go orders. An 18 percent service charge will be added.";
+        agreementCopy.textContent = "(Happy Hour) $30 per person covers food and drinks up to that value. Guest pays the difference if they go over. No refunds or credit if under. No to-go orders. Happy Hour is available Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM. An 18 percent service charge will be added.";
+      } else {
+        const roomRate = getSelectedRoomRate();
+        const roomName = roomTypeSelect.value;
+        const roomMax = getSelectedRoomMax();
+        const peopleValue = peopleInput.value;
+
+        if (!roomName || !peopleValue) {
+          timeFields.hidden = false;
+          regularRoomFields.hidden = false;
+          hoursInput.disabled = false;
+          dateLabelText.textContent = "Reservation Date";
+          happyTimesField.hidden = true;
+          regularStartField.hidden = false;
+          regularEndField.hidden = false;
+          happyTimesInput.value = "";
+          document.getElementById("durationLabel").style.opacity = "1";
+          summaryIntro.textContent = "Choose a room first, then choose the number of people allowed for that room.";
+          estimateLabel.textContent = "Estimated Room Rate";
+          estimateValue.textContent = "$0";
+          estimateDetails.textContent = "Regular Hour pricing will update after you select a room and guest count.";
+          finePrintText.textContent = "Regular Hour terms: room rates vary by room size. Food and drinks are separate. No outside food or drinks. An 18 percent service charge will be added. Guest agrees to be responsible for all karaoke room charges, food, and beverage charges.";
+          agreementCopy.textContent = "(Regular Hour) I agree to be responsible for all karaoke room charges, food, and beverage charges. Food and drinks are separate. No outside food or drinks. An 18 percent service charge will be added.";
+          return;
+        }
+
+        const total = hours * roomRate;
+        timeFields.hidden = false;
+        regularRoomFields.hidden = false;
+        hoursInput.disabled = false;
+        dateLabelText.textContent = "Reservation Date";
+        happyTimesField.hidden = true;
+        regularStartField.hidden = false;
+        regularEndField.hidden = false;
+        happyTimesInput.value = "";
+        document.getElementById("durationLabel").style.opacity = "1";
+        summaryIntro.textContent = "Regular Hour estimate is based on the selected room size and hourly rate.";
+        estimateLabel.textContent = "Estimated Room Rate";
+        estimateValue.textContent = formatMoney(total);
+        estimateDetails.textContent = `${roomName} for up to ${roomMax} guests at ${formatMoney(roomRate)} per hour x ${hours} hour${hours === 1 ? "" : "s"} = ${formatMoney(total)} estimated karaoke room charge before service charge. Food and drinks are separate.`;
+        finePrintText.textContent = "Regular Hour terms: room rates vary by room size. Food and drinks are separate. No outside food or drinks. An 18 percent service charge will be added. Guest agrees to be responsible for all karaoke room charges, food, and beverage charges.";
+        agreementCopy.textContent = "(Regular Hour) I agree to be responsible for all karaoke room charges, food, and beverage charges. Food and drinks are separate. No outside food or drinks. An 18 percent service charge will be added.";
+      }
+    }
+
+    function buildSavedCopy(formData) {
+      const type = formData.get("bookingType");
+      const people = formData.get("people");
+      const hours = formData.get("hours");
+      const name = formData.get("guestName");
+      const notes = formData.get("notes") || "None";
+
+      if (type === "happy") {
+        const bookingDate = formData.get("bookingDate") || "Not set";
+        const happyTimes = formData.get("happyTimes") || "Not set";
+        const total = Math.max(Number(people) || 0, 0) * 30;
+        return [
+          `Booking Type: Happy Hour`,
+          `Guest: ${name}`,
+          `People: ${people}`,
+          `Date: ${bookingDate}`,
+          `Happy Hour Times: ${happyTimes}`,
+          `Estimated Charge: ${formatMoney(total)} before 18% service charge`,
+          `Agreement: I agree to be responsible for all karaoke room charges, food, and beverage charges. Happy Hour is $30 per person and covers food and drinks up to that value. Happy Hour is available Mon-Fri 6:00 PM to 8:00 PM and Sat-Sun 3:00 PM to 9:00 PM. I will pay the difference if we go over. No refunds or credit if under. No to-go orders. 18% service charge added.`,
+          `Notes: ${notes}`
+        ].join("\n");
+      }
+
+      const roomName = formData.get("roomType");
+      const roomRate = getSelectedRoomRate();
+      const total = Math.max(Number(hours) || 0, 0) * roomRate;
+      return [
+        `Booking Type: Regular Hour`,
+        `Guest: ${name}`,
+        `People: ${people}`,
+        `Room: ${roomName}`,
+        `Reservation Date: ${formData.get("bookingDate") || "Not set"}`,
+        `Reservation Time: ${(formData.get("startTime") || "Not set")} to ${(formData.get("endTime") || "Not set")}`,
+        `Karaoke Room Hours: ${hours}`,
+        `Estimated Room Charge: ${formatMoney(total)} before 18% service charge`,
+        `Agreement: I agree to be responsible for all karaoke room charges, food, and beverage charges. ${roomName} is ${formatMoney(roomRate)} per hour. Food and drinks are separate. No outside food or drinks. 18% service charge added.`,
+        `Notes: ${notes}`
+      ].join("\n");
+    }
+
+    bookingDateInput.addEventListener("change", () => {
+      saveButton.disabled = !bookingDateInput.value;
+    });
+
+    form.addEventListener("change", () => {
+      updateView();
+    });
+    peopleInput.addEventListener("change", updateView);
+    hoursInput.addEventListener("input", updateView);
+    roomTypeSelect.addEventListener("change", updateView);
+    bookingTypeInputs.forEach((input) => input.addEventListener("change", updateView));
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const type = formData.get("bookingType");
+      const people = Number(formData.get("people")) || 0;
+
+      if (!bookingDateInput.value) {
+        statusMessage.textContent = "Choose the booking date before saving the booking.";
+        bookingDateInput.focus();
+        return;
+      }
+
+      if (type === "regular") {
+        if (!formData.get("roomType")) {
+          statusMessage.textContent = "Choose a room before saving a Regular Hour booking.";
+          return;
+        }
+
+        const roomMax = getSelectedRoomMax();
+        if (people > roomMax) {
+          statusMessage.textContent = `That room only allows up to ${roomMax} guests.`;
+          syncPeopleLimit();
+          return;
+        }
+      }
+
+      lastSavedAgreement = buildSavedCopy(formData);
+      savedOutput.textContent = lastSavedAgreement;
+      saveBookingToHistory(lastSavedAgreement);
+      statusMessage.textContent = "Booking saved. Agreement details are now recorded below.";
+    });
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      form.elements.bookingType.value = "happy";
+      hoursInput.value = 2;
+      roomTypeSelect.selectedIndex = 0;
+      lastSavedAgreement = "";
+      saveButton.disabled = !bookingDateInput.value;
+      savedOutput.textContent = "No booking saved yet.";
+      statusMessage.textContent = "";
+      updateView();
+    });
+
+    accountButton.addEventListener("click", openAccountModal);
+    unlockButton.addEventListener("click", unlockSavedBookings);
+    closeModalButton.addEventListener("click", closeAccountModal);
+    accountModal.addEventListener("click", (event) => {
+      if (event.target === accountModal) {
+        closeAccountModal();
+      }
+    });
+    accessCodeInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        unlockSavedBookings();
+      }
+    });
+
+    saveButton.disabled = !bookingDateInput.value;
+    updateView();
+  </script>
+</body>
+</html>
